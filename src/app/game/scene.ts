@@ -95,6 +95,6 @@ export class Scene {
   }
 
   movePlayer(key: string) {
-    this.#actions[key]();
+    if (this.#actions[key]) this.#actions[key]();
   }
 }
