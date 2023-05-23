@@ -1,12 +1,14 @@
 import { ElementRef } from '@angular/core';
-import { Ball } from './ball';
-import { ActionsByKeyCode, Player } from './player';
+import { Ball } from '../model/ball';
+import { ActionsByKeyCode, Player } from '../model/player';
+import { ViewScene } from '../view/view-scene';
 
 export class Scene {
   players: Player[] = [];
   ball!: Ball;
   #timer!: number;
-  #ctx!: CanvasRenderingContext2D;
+  #sceneView: ViewScene;
+
   public width = 500;
   public height = 500;
   #actions: { [key: string]: Function } = {};
@@ -14,38 +16,21 @@ export class Scene {
   constructor(private canvas: ElementRef<HTMLCanvasElement>) {
     let ctx = canvas.nativeElement.getContext('2d');
     if (!ctx) throw Error('Wrong context');
-    this.#ctx = ctx;
+    this.#sceneView = new ViewScene(ctx);
     this.width = this.canvas.nativeElement.width;
     this.height = this.canvas.nativeElement.height;
   }
 
-  private clearScene = () => {
-    this.#ctx.clearRect(0, 0, this.width, this.height);
-  };
-
   draw = () => {
-    this.clearScene();
+    this.#sceneView.clearScene(this.width, this.height);
     this.players.forEach((p) => {
-      this.drawPlayer(p);
+      this.#sceneView.drawPlayer(p);
       this.ball.bouncingPanel(p);
     });
     this.ball.bouncingScene([this.width, this.height]);
     this.ball.move();
-    this.drawBall(this.ball!);
+    this.#sceneView.drawBall(this.ball!);
   };
-
-  private drawBall = (ball: Ball) => {
-    this.#ctx.beginPath();
-    this.#ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
-    this.#ctx.fillStyle = ball.color;
-    this.#ctx.fill();
-    this.#ctx.closePath();
-  };
-
-  private drawPlayer(player: Player) {
-    this.#ctx.fillStyle = player.color;
-    this.#ctx.fillRect(player.x, player.y, player.width, player.height);
-  }
 
   gameStart = () => {
     if (!this.ball && !(this.players.length === 2))

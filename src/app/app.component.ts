@@ -6,7 +6,7 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { Scene } from './game/scene';
+import { Scene } from './game/controller/scene';
 import { config } from './configs/game.config';
 
 @Component({
